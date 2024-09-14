@@ -1,13 +1,5 @@
 import * as cheerio from "cheerio";
-
-interface ParsedPosting {
-  title: string;
-  location: string;
-  department: string;
-  commitment: string;
-  workplaceTypes: string;
-  requirements: string;
-}
+import { ParsedPosting } from "../types";
 
 export function parseJobPostingHtml(html: string) {
   const $ = cheerio.load(html);
