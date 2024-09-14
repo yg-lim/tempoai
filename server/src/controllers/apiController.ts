@@ -11,10 +11,19 @@ export const predictSalary = async (
   const { jobPostingUrl } = req.body;
   if (!isLeverJobPosting(jobPostingUrl)) next("Not a Lever Job Posting");
 
-  const jobPostingHtml = await leverService.getJobPosting(jobPostingUrl);
-  // TODO: check if job posting still valid (expired? not found?)
+  try {
+    const jobPostingHtml = await leverService
+      .getJobPosting(jobPostingUrl)
+      .catch((_) => {
+        next(
+          "Could not find the Lever Job Posting. The listing may have expired."
+        );
+      });
 
-  const parsedJobPosting = parseJobPostingHtml(jobPostingHtml);
-  const company = parseCompanyName(jobPostingUrl);
-  res.send({ company, ...parsedJobPosting });
+    const parsedJobPosting = parseJobPostingHtml(jobPostingHtml);
+    const company = parseCompanyName(jobPostingUrl);
+    res.send({ company, ...parsedJobPosting });
+  } catch (error) {
+    next(error);
+  }
 };
