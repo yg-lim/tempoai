@@ -9,7 +9,10 @@ export const predictSalary = async (
   next: NextFunction
 ) => {
   const { jobPostingUrl } = req.body;
-  if (!isLeverJobPosting(jobPostingUrl)) next("Not a Lever Job Posting");
+  if (!isLeverJobPosting(jobPostingUrl)) {
+    next("Not a Lever Job Posting");
+    return;
+  }
 
   try {
     const jobPostingHtml = await leverService
@@ -22,7 +25,7 @@ export const predictSalary = async (
 
     const parsedJobPosting = parseJobPostingHtml(jobPostingHtml);
     const company = parseCompanyName(jobPostingUrl);
-    res.send({ company, ...parsedJobPosting });
+    res.json({ company, ...parsedJobPosting });
   } catch (error) {
     next(error);
   }
