@@ -2,7 +2,8 @@
 
 ## How to install / start:
 
-- Run `./SETUP.sh` and it will install all dependencies for both client and server, and run the development server on both the front-end and back-end.
+- Create a `.env` file within the `server` directory with the value `ANTHROPIC_API_KEY=<key here>`
+- Return to root directory of repo and run `./SETUP.sh`. It will install all dependencies for both client and server, and run the development server on both the front-end and back-end.
 
 Some notes:
 
