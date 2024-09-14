@@ -22,3 +22,10 @@ export function parseJobPostingHtml(html: string) {
 
   return parsedPosting;
 }
+
+export function parseCompanyName(urlString: string) {
+  const url = new URL(urlString);
+  const path = url.pathname.split("/");
+  console.log(path);
+  return path[1];
+}
