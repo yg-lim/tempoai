@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { leverService } from "../services/leverService";
+import { isLeverJobPosting } from "../utils/urlValidator";
 import { parseJobPostingHtml } from "../utils/parser";
 
 export const predictSalary = async (
@@ -8,7 +9,8 @@ export const predictSalary = async (
   next: NextFunction
 ) => {
   const { jobPostingUrl } = req.body;
-  // TODO: url validation (is valid Lever job posting url?)
+  if (!isLeverJobPosting(jobPostingUrl)) next("Not a valid Lever Job Posting");
+
   const jobPostingHtml = await leverService.getJobPosting(jobPostingUrl);
   // TODO: check if job posting still valid (expired? not found?)
 
