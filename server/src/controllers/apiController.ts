@@ -1,5 +1,6 @@
 import { configDotenv } from "dotenv";
 configDotenv();
+
 import { Request, Response, NextFunction } from "express";
 import { leverService } from "../services/leverService";
 import { isLeverJobPosting } from "../utils/urlValidator";
@@ -53,27 +54,20 @@ export async function predictSalary(
   const prompt =
     "Given the following job posting information in JSON format:\n" +
     `${JSON.stringify(jobPostingInfo)}\n` +
-    "Please provide a salary estimate.";
+    "Please provide your best salary estimate based on other similar jobs and the current market rate.\n" +
+    "Your job is to simpy provide the salary estimate with justifications on why, but no other information.";
 
   try {
-    const stream = await anthropic.messages.stream({
+    const response = await anthropic.messages.create({
       messages: [{ role: "user", content: prompt }],
       model: "claude-3-opus-20240229",
       max_tokens: 1000,
     });
 
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
+    const content =
+      response.content[0].type === "text" ? response.content[0].text : "";
 
-    for await (const chunk of stream) {
-      if (chunk.type === "content_block_delta") {
-        res.write(`data: ${JSON.stringify(chunk.delta)}\n\n`);
-      }
-    }
-
-    res.write("data: [DONE]\n\n");
-    res.end();
+    res.json({ prediction: content });
   } catch (error) {
     next("An error occurred while processing your request");
   }
